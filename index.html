@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>COME BACK 🎄</title>
+  <style>
+    :root{
+      --bg1:#05150f;
+      --bg2:#0a2519;
+      --card:#0e2b21cc;
+      --text:#eafff2;
+      --muted:#b7e6cc;
+      --gold:#ffd76a;
+      --red:#ff4d4f;
+      --green:#30d158;
+      --shadow: 0 18px 55px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif;
+      background:
+        radial-gradient(1200px 800px at 70% 20%, #123b2a 0%, transparent 55%),
+        radial-gradient(900px 600px at 20% 80%, #0e3a28 0%, transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      overflow:hidden;
+    }
+
+    canvas#snow{
+      position:fixed;
+      inset:0;
+      z-index:0;
+      pointer-events:none;
+    }
+
+    .wrap{
+      position:relative;
+      height:100vh;
+      display:grid;
+      place-items:center;
+      padding:24px;
+      z-index:1;
+    }
+    .card{
+      width:min(900px, 94vw);
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow);
+      border-radius: 28px;
+      padding: 30px 26px 22px;
+      backdrop-filter: blur(10px);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom: 10px;
+    }
+    h1{
+      margin:0;
+      font-size: clamp(26px, 4vw, 44px);
+      letter-spacing: 1.2px;
+      line-height:1.1;
+    }
+    .sub{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size: 13px;
+    }
+    .badge{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      font-size: 13px;
+      color: var(--muted);
+      user-select:none;
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:18px;
+      margin-top:14px;
+      align-items:stretch;
+    }
+    @media (max-width: 860px){
+      .row{grid-template-columns:1fr}
+    }
+
+    .panel{
+      border-radius: 20px;
+      padding: 18px;
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.10);
+      position:relative;
+    }
+
+    /* TREE */
+    .treeBox{
+      display:grid;
+      place-items:center;
+      min-height: 360px;
+      position:relative;
+    }
+    .star{
+      font-size: 40px;
+      filter: drop-shadow(0 10px 18px rgba(255,215,106,.35));
+      animation: twinkle 1.6s ease-in-out infinite;
+      margin-bottom: -6px;
+    }
+    @keyframes twinkle{
+      0%,100%{transform: translateY(0) scale(1); opacity:1}
+      50%{transform: translateY(-3px) scale(1.06); opacity:.85}
+    }
+    .tree{
+      position:relative;
+      width: 320px;
+      height: 320px;
+      display:grid;
+      place-items:center;
+      transform: translateY(-4px);
+    }
+    .tri{
+      width:0;height:0;
+      border-left: 150px solid transparent;
+      border-right:150px solid transparent;
+      border-bottom: 250px solid rgba(48,209,88,.86);
+      filter: drop-shadow(0 18px 28px rgba(0,0,0,.24));
+      position:relative;
+    }
+    .tri:before{
+      content:"";
+      position:absolute;
+      left:-115px; top:62px;
+      width:0;height:0;
+      border-left:115px solid transparent;
+      border-right:115px solid transparent;
+      border-bottom:190px solid rgba(48,209,88,.76);
+    }
+    .tri:after{
+      content:"";
+      position:absolute;
+      left:-86px; top:112px;
+      width:0;height:0;
+      border-left:86px solid transparent;
+      border-right:86px solid transparent;
+      border-bottom:140px solid rgba(48,209,88,.66);
+    }
+    .trunk{
+      width:84px;
+      height:60px;
+      border-radius: 14px;
+      background: rgba(170,110,70,.86);
+      margin-top: -12px;
+      box-shadow: 0 12px 24px rgba(0,0,0,.18);
+    }
+
+    /* Come Back text on tree */
+    .label{
+      position:absolute;
+      top: 120px;
+      width: 100%;
+      text-align:center;
+      font-weight: 900;
+      letter-spacing: 4px;
+      font-size: 34px;
+      color: rgba(255,255,255,.92);
+      text-shadow:
+        0 10px 24px rgba(0,0,0,.45),
+        0 0 18px rgba(255,215,106,.18);
+      animation: glow 2.2s ease-in-out infinite;
+      user-select:none;
+      pointer-events:none;
+    }
+    @keyframes glow{
+      0%,100%{opacity:.95; transform: scale(1)}
+      50%{opacity:.78; transform: scale(1.01)}
+    }
+
+    /* Lights */
+    .lights{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+    }
+    .bulb{
+      position:absolute;
+      width:12px; height:12px;
+      border-radius: 50%;
+      box-shadow: 0 0 18px rgba(255,255,255,.25);
+      animation: blink 1.8s infinite;
+    }
+    @keyframes blink{
+      0%,100%{opacity:.95; transform:scale(1)}
+      50%{opacity:.35; transform:scale(.82)}
+    }
+
+    /* Right panel text */
+    .big{
+      margin:0;
+      font-size: clamp(20px, 2.4vw, 26px);
+      line-height: 1.6;
+    }
+    .muted{
+      margin:10px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
+    button{
+      cursor:pointer;
+      border:0;
+      border-radius: 14px;
+      padding: 10px 14px;
+      color: #0b1b12;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--gold), #ffefb0);
+      box-shadow: 0 10px 24px rgba(255,215,106,.18);
+    }
+    button.secondary{
+      background: rgba(255,255,255,.10);
+      color: var(--text);
+      font-weight: 650;
+      border: 1px solid rgba(255,255,255,.18);
+      box-shadow:none;
+    }
+
+    .footer{
+      margin-top: 14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      color: rgba(234,255,242,.75);
+      font-size: 12px;
+    }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      padding:2px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      color: rgba(255,255,255,.85);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="snow"></canvas>
+
+  <div class="wrap">
+    <div class="card">
+      <div class="top">
+        <div>
+          <h1>COME BACK 🎄</h1>
+          <p class="sub">一棵“回归”的圣诞树：灯会闪、雪会落、文字会呼吸。</p>
+        </div>
+        <div class="badge" id="clock">⏰ --:--:--</div>
+      </div>
+
+      <div class="row">
+        <div class="panel">
+          <div class="treeBox">
+            <div class="star">⭐</div>
+
+            <div class="tree" aria-label="Come Back Christmas Tree">
+              <div class="tri"></div>
+              <div class="label" id="label">COME BACK</div>
+              <div class="lights" id="lights" aria-hidden="true"></div>
+            </div>
+
+            <div class="trunk"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <p class="big" id="msg">
+            圣诞快乐。<br/>如果你愿意——就回来吧。
+          </p>
+          <p class="muted">
+            操作：<span class="kbd">Space</span> 切换一句话，
+            <span class="kbd">S</span> 开/关雪花，
+            <span class="kbd">C</span> 复制链接。
+          </p>
+
+          <div class="actions">
+            <button id="btnNext">换一句</button>
+            <button class="secondary" id="btnSnow">雪花：开/关</button>
+            <button class="secondary" id="btnCopy">复制网页链接</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <span>Made for GitHub Pages • 2025</span>
+        <span>部署后，把链接发出去就能外网访问。</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---- Clock ----
+    const clock = document.getElementById('clock');
+    const pad = n => String(n).padStart(2,'0');
+    const tick = () => {
+      const d = new Date();
+      clock.textContent = `⏰ ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    };
+    setInterval(tick, 250); tick();
+
+    // ---- Text messages ----
+    const msgEl = document.getElementById('msg');
+    const labelEl = document.getElementById('label');
+    const lines = [
+      {label:"COME BACK", msg:"圣诞快乐。<br/>如果你愿意——就回来吧。"},
+      {label:"WELCOME", msg:"门一直开着。<br/>欢迎回来。"},
+      {label:"WE MISSED YOU", msg:"有人在想你。<br/>回来一起过节吧。"},
+      {label:"HOME", msg:"最温暖的地方，叫“回家”。<br/>🎄"},
+      {label:"STAY", msg:"如果你已经回来了——<br/>那就别走太快。"},
+      {label:"MERRY CHRISTMAS", msg:"愿你平安、喜乐、<br/>被温柔照亮。✨"}
+    ];
+    let idx = 0;
+    function apply(i){
+      idx = (i + lines.length) % lines.length;
+      labelEl.textContent = lines[idx].label;
+      msgEl.innerHTML = lines[idx].msg;
+    }
+    document.getElementById('btnNext').addEventListener('click', ()=>apply(idx+1));
+
+    // keyboard shortcuts
+    window.addEventListener('keydown', (e)=>{
+      const k = e.key.toLowerCase();
+      if(e.code === 'Space'){ e.preventDefault(); apply(idx+1); }
+      if(k === 's'){ toggleSnow(); }
+      if(k === 'c'){ copyLink(); }
+    });
+
+    // ---- Copy link ----
+    async function copyLink(){
+      try{
+        await navigator.clipboard.writeText(location.href);
+        alert("已复制当前网页链接 ✅");
+      }catch(e){
+        prompt("复制失败，请手动复制：", location.href);
+      }
+    }
+    document.getElementById('btnCopy').addEventListener('click', copyLink);
+
+    // ---- Lights ----
+    const lights = document.getElementById('lights');
+    const colors = ["#ff4d4f", "#ffd76a", "#30d158", "#66e3ff", "#b88cff"];
+    function bulb(x,y,delay){
+      const b = document.createElement('div');
+      b.className = 'bulb';
+      b.style.left = x + '%';
+      b.style.top = y + '%';
+      b.style.background = colors[Math.floor(Math.random()*colors.length)];
+      b.style.animationDelay = delay + 's';
+      lights.appendChild(b);
+    }
+    // Two garlands across the tree
+    for(let i=0;i<18;i++){
+      bulb(18 + i*3.8, 42 + Math.sin(i/2)*8, (i%6)*0.14);
+    }
+    for(let i=0;i<16;i++){
+      bulb(22 + i*3.6, 62 + Math.sin(i/2)*7, (i%7)*0.12);
+    }
+    for(let i=0;i<14;i++){
+      bulb(26 + i*3.4, 80 + Math.sin(i/2)*6, (i%5)*0.16);
+    }
+
+    // ---- Snow ----
+    const canvas = document.getElementById('snow');
+    const ctx = canvas.getContext('2d');
+    let W,H,flakes=[], snowOn=true;
+
+    function resize(){
+      W = canvas.width = window.innerWidth * devicePixelRatio;
+      H = canvas.height = window.innerHeight * devicePixelRatio;
+    }
+    window.addEventListener('resize', resize); resize();
+
+    function initSnow(n=150){
+      flakes = [];
+      for(let i=0;i<n;i++){
+        flakes.push({
+          x: Math.random()*W,
+          y: Math.random()*H,
+          r: (Math.random()*2.2 + 0.8) * devicePixelRatio,
+          v: (Math.random()*0.9 + 0.4) * devicePixelRatio,
+          d: (Math.random()*1.2 - 0.6) * devicePixelRatio
+        });
+      }
+    }
+    initSnow();
+
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      if(!snowOn) return;
+      for(const f of flakes){
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+        ctx.fillStyle = "rgba(255,255,255,0.95)";
+        ctx.fill();
+      }
+    }
+    function update(){
+      if(!snowOn) return;
+      for(const f of flakes){
+        f.y += f.v;
+        f.x += f.d;
+        if(f.y - f.r > H){ f.y = -10 * devicePixelRatio; f.x = Math.random()*W; }
+        if(f.x < -10*devicePixelRatio) f.x = W + 10*devicePixelRatio;
+        if(f.x > W + 10*devicePixelRatio) f.x = -10*devicePixelRatio;
+      }
+    }
+    function loop(){
+      update(); draw();
+      requestAnimationFrame(loop);
+    }
+    loop();
+
+    function toggleSnow(){
+      snowOn = !snowOn;
+      if(!snowOn) ctx.clearRect(0,0,W,H);
+    }
+    document.getElementById('btnSnow').addEventListener('click', toggleSnow);
+  </script>
+</body>
+</html>
